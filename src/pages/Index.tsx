@@ -1,11 +1,32 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import Dashboard from "@/components/Dashboard";
+import InventoryTable from "@/components/InventoryTable";
+import StockChart from "@/components/StockChart";
+import AIChat from "@/components/AIChat";
+import { Sparkles } from "lucide-react";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/5">
+      <div className="container mx-auto py-8 px-4 space-y-8">
+        <header className="text-center space-y-2 animate-fade-in">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Sparkles className="h-8 w-8 text-primary" />
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Glamour Inventory
+            </h1>
+          </div>
+          <p className="text-muted-foreground text-lg">
+            Smart makeup inventory management system
+          </p>
+        </header>
+
+        <Dashboard />
+
+        <StockChart />
+
+        <InventoryTable />
+
+        <AIChat />
       </div>
     </div>
   );
