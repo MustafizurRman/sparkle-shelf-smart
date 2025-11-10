@@ -14,7 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      inventory_items: {
+        Row: {
+          brand: string | null
+          category: string
+          created_at: string | null
+          id: string
+          min_stock_level: number | null
+          name: string
+          quantity: number
+          sku: string | null
+          total_value: number | null
+          unit_price: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          brand?: string | null
+          category: string
+          created_at?: string | null
+          id?: string
+          min_stock_level?: number | null
+          name: string
+          quantity?: number
+          sku?: string | null
+          total_value?: number | null
+          unit_price?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          brand?: string | null
+          category?: string
+          created_at?: string | null
+          id?: string
+          min_stock_level?: number | null
+          name?: string
+          quantity?: number
+          sku?: string | null
+          total_value?: number | null
+          unit_price?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      stock_movements: {
+        Row: {
+          created_at: string | null
+          id: string
+          item_id: string
+          movement_type: string
+          notes: string | null
+          quantity: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          item_id: string
+          movement_type: string
+          notes?: string | null
+          quantity: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          item_id?: string
+          movement_type?: string
+          notes?: string | null
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
