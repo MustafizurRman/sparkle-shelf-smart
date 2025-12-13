@@ -1,8 +1,9 @@
 import Dashboard from "@/components/Dashboard";
-import InventoryTable from "@/components/InventoryTable";
 import StockChart from "@/components/StockChart";
 import AIChat from "@/components/AIChat";
 import { Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -24,7 +25,13 @@ const Index = () => {
 
         <StockChart />
 
-        <InventoryTable />
+        <div className="flex justify-center">
+          <Link to="/inventory">
+            <Button size="lg" className="bg-primary hover:bg-primary/90 px-8">
+              Manage Inventory
+            </Button>
+          </Link>
+        </div>
 
         <AIChat />
       </div>

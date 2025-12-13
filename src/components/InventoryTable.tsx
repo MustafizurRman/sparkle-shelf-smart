@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { fetchInventoryItems, deleteInventoryItem } from "@/services/inventoryApi";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -22,26 +22,11 @@ const InventoryTable = () => {
 
   const { data: items, isLoading } = useQuery({
     queryKey: ["inventory-items"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("inventory_items")
-        .select("*")
-        .order("created_at", { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    },
+    queryFn: fetchInventoryItems,
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("inventory_items")
-        .delete()
-        .eq("id", id);
-      
-      if (error) throw error;
-    },
+    mutationFn: deleteInventoryItem,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["inventory-items"] });
       toast({
@@ -49,10 +34,10 @@ const InventoryTable = () => {
         description: "The item has been removed from inventory.",
       });
     },
-    onError: () => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: "Failed to delete item.",
+        description: error.message || "Failed to delete item.",
         variant: "destructive",
       });
     },
@@ -106,8 +91,8 @@ const InventoryTable = () => {
           <TableBody>
             {items?.map((item) => (
               <TableRow 
-                key={item.id}
-                className={item.quantity <= item.min_stock_level ? "bg-destructive/5" : ""}
+                key={item._id}
+                className={(item.quantity <= (item.min_stock_level || 10)) ? "bg-destructive/5" : ""}
               >
                 <TableCell className="font-medium">{item.name}</TableCell>
                 <TableCell>{item.brand || "-"}</TableCell>
@@ -133,7 +118,7 @@ const InventoryTable = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => handleDelete(item._id)}
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>

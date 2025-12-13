@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { fetchInventoryItems } from "@/services/inventoryApi";
 import { Card } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
@@ -8,14 +8,7 @@ const COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--secondar
 const StockChart = () => {
   const { data: items, isLoading } = useQuery({
     queryKey: ["inventory-items"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("inventory_items")
-        .select("*");
-      
-      if (error) throw error;
-      return data;
-    },
+    queryFn: fetchInventoryItems,
   });
 
   if (isLoading) {

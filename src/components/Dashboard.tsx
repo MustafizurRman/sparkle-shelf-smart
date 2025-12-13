@@ -1,24 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { fetchInventoryItems } from "@/services/inventoryApi";
 import { Package, AlertCircle, TrendingUp, DollarSign } from "lucide-react";
 
 const Dashboard = () => {
   const { data: items, isLoading } = useQuery({
     queryKey: ["inventory-items"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("inventory_items")
-        .select("*")
-        .order("created_at", { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    },
+    queryFn: fetchInventoryItems,
   });
 
   const totalItems = items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
-  const lowStockItems = items?.filter(item => item.quantity <= item.min_stock_level).length || 0;
+  const lowStockItems = items?.filter(item => item.quantity <= (item.min_stock_level || 10)).length || 0;
   const totalValue = items?.reduce((sum, item) => sum + (item.total_value || 0), 0) || 0;
   const uniqueItems = items?.length || 0;
 

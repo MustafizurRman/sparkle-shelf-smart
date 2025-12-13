@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { createInventoryItem, updateInventoryItem, InventoryItem } from "@/services/inventoryApi";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 interface InventoryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  item?: any;
+  item?: InventoryItem;
 }
 
 const InventoryDialog = ({ open, onOpenChange, item }: InventoryDialogProps) => {
@@ -43,17 +43,17 @@ const InventoryDialog = ({ open, onOpenChange, item }: InventoryDialogProps) => 
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {
+      const processedData = {
+        ...data,
+        quantity: parseInt(data.quantity),
+        min_stock_level: parseInt(data.min_stock_level),
+        unit_price: parseFloat(data.unit_price),
+      };
+
       if (item) {
-        const { error } = await supabase
-          .from("inventory_items")
-          .update(data)
-          .eq("id", item.id);
-        if (error) throw error;
+        return updateInventoryItem(item._id!, processedData);
       } else {
-        const { error } = await supabase
-          .from("inventory_items")
-          .insert([data]);
-        if (error) throw error;
+        return createInventoryItem(processedData);
       }
     },
     onSuccess: () => {
@@ -64,22 +64,17 @@ const InventoryDialog = ({ open, onOpenChange, item }: InventoryDialogProps) => 
       });
       onOpenChange(false);
     },
-    onError: () => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: "Failed to save item.",
+        description: error.message || "Failed to save item.",
         variant: "destructive",
       });
     },
   });
 
   const onSubmit = (data: any) => {
-    mutation.mutate({
-      ...data,
-      quantity: parseInt(data.quantity),
-      min_stock_level: parseInt(data.min_stock_level),
-      unit_price: parseFloat(data.unit_price),
-    });
+    mutation.mutate(data);
   };
 
   return (
